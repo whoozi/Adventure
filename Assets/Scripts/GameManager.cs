@@ -27,4 +27,6 @@ public class GameManager : Singleton<GameManager>
 
 		throw new Exception("Can not locate local player");
 	}
+
+	public GameObject swordItem, shieldItem;
 }

@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 95552950048479784}
   - component: {fileID: 212362954834041432}
   - component: {fileID: 114143294258109900}
+  - component: {fileID: 114388977400925870}
   m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
@@ -103,6 +104,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_defaultAnim: {fileID: 0}
+--- !u!114 &114388977400925870
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1172238982547664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf860f4296d4d04fb8c9e2b8c326c7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_node0: {x: 0, y: 0}
+  m_node1: {x: 0, y: 0}
+  m_node2: {x: 0, y: 0}
+  m_node3: {x: 0, y: 0}
+  m_node4: {x: 0, y: 0}
+  m_node5: {x: 0, y: 0}
+  m_node6: {x: 0, y: 0}
+  m_node7: {x: 0, y: 0}
+  m_node8: {x: 0, y: 0}
+  m_node9: {x: 0, y: 0}
+  m_ang0: 0
+  m_ang1: 0
+  m_ang2: 0
+  m_ang3: 0
+  m_ang4: 0
+  m_ang5: 0
+  m_ang6: 0
+  m_ang7: 0
+  m_ang8: 0
+  m_ang9: 0
 --- !u!114 &114597553651233112
 MonoBehaviour:
   m_ObjectHideFlags: 1

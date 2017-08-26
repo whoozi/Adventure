@@ -51,6 +51,12 @@ public class Mob : NetworkBehaviour
 		transform.rotation = Quaternion.LookRotation(GameManager.mainCamera.transform.forward.OnlyXZ());
 	}
 
+	protected virtual void Animate()
+	{
+		direction = CalculateDirection();
+		transform.localScale = new Vector3(direction == Direction.Left ? -1f : 1f, 1f, 1f);
+	}
+
 	protected void Move()
 	{
 		velocity += Physics.gravity * Time.fixedDeltaTime;
@@ -68,13 +74,6 @@ public class Mob : NetworkBehaviour
 	protected void Jump()
 	{
 		velocity.y = Mathf.Sqrt(-2f * jumpHeight * Physics.gravity.y);
-	}
-
-	protected virtual void Animate()
-	{
-		direction = CalculateDirection();
-
-		renderer.flipX = (direction == Direction.Left);
 	}
 
 	private Direction CalculateDirection()

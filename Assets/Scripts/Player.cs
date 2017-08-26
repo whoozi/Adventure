@@ -3,34 +3,39 @@
 using UnityEngine;
 using UnityEngine.Networking;
 
-public struct InputState
-{
-	public uint state;
-	public float horizontalInput;
-	public float verticalInput;
-	public bool jumpInput;
-	public sbyte camera;
-}
-
-public struct TransformState
-{
-	public uint state;
-	public Vector3 position;
-}
+using PowerTools;
 
 [NetworkSettings(channel = 1, sendInterval = 0.3f)]
 public class Player : Mob
 {
+	public struct InputState
+	{
+		public uint state;
+		public sbyte horizontalInput;
+		public sbyte verticalInput;
+		public bool jumpInput;
+		public sbyte camera;
+	}
+
+	public struct TransformState
+	{
+		public uint state;
+		public Vector3 position;
+	}
+
 	public PlayerCamera playerCamera { get; private set; }
+	public SpriteAnimNodes animatorNodes { get; private set; }
 
 	public AnimationClip idleDown, idleUp, idleSide, moveDown, moveUp, moveSide;
 
+	private GameObject mainHandObject, offHandObject;
+
 	private InputState currentInputState;
-	private List<InputState> queuedInputStates = new List<InputState>();
-	private uint currentState, lastClientState, lastClientRecState;
-	private float nextSendTime;
+	private List<InputState> queuedInputStates;
 	[SyncVar(hook = "OnServerStateChanged")]
 	private TransformState serverState;
+	private uint currentState, lastClientState, lastClientRecState;
+	private float nextSendTime;
 
 	protected override void Start()
 	{
@@ -40,7 +45,14 @@ public class Player : Mob
 			return;
 
 		playerCamera = GameManager.mainCamera.GetComponent<PlayerCamera>();
+		animatorNodes = GetComponentInChildren<SpriteAnimNodes>();
+
 		playerCamera.target = this;
+
+		mainHandObject = Instantiate(GameManager.instance.swordItem, transform, false);
+		offHandObject = Instantiate(GameManager.instance.shieldItem, transform, false);
+
+		queuedInputStates = new List<InputState>();
 	}
 
 	protected override void FixedUpdate()
@@ -52,8 +64,8 @@ public class Player : Mob
 			currentInputState = new InputState()
 			{
 				state = currentState,
-				horizontalInput = Input.GetAxisRaw("Horizontal"),
-				verticalInput = Input.GetAxisRaw("Vertical"),
+				horizontalInput = (sbyte)(Input.GetAxisRaw("Horizontal") * 127f),
+				verticalInput = (sbyte)(Input.GetAxisRaw("Vertical") * 127f),
 				jumpInput = Input.GetButton("Jump"),
 				camera = playerCamera.side,
 			};
@@ -92,25 +104,50 @@ public class Player : Mob
 			transform.position = new Vector3(Random.Range(-3f, 3f), 3f, Random.Range(-3f, 3f));
 	}
 
-	private void PerformMovement(InputState state)
+	private void LateUpdate()
 	{
-		moveDirection = new Vector3(state.horizontalInput, 0f, state.verticalInput).relativeTo(Quaternion.Euler(0f, state.camera * 90f, 0f));
+		if (mainHandObject)
+		{
+			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(0) * (1f / renderer.sprite.pixelsPerUnit);
+			localPosition.y = -localPosition.y;
+			localPosition.z += (direction == Direction.Left || direction == Direction.Up) ? 0.0001f : -0.0001f;
 
-		if (state.jumpInput)
-			if (controller.isGrounded)
-				Jump();
+			mainHandObject.transform.localPosition = localPosition;
+			mainHandObject.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(0));
+			mainHandObject.transform.localScale = new Vector3(direction == Direction.Down ? -1f : 1f, 1f, 1f);
+		}
 
-		Move();
+		if (offHandObject)
+		{
+			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(1) * (1f / renderer.sprite.pixelsPerUnit);
+			localPosition.y = -localPosition.y;
+			localPosition.z += (direction == Direction.Right || direction == Direction.Up) ? 0.0001f : -0.0001f;
+
+			offHandObject.transform.localPosition = localPosition;
+			offHandObject.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(1));
+			offHandObject.transform.localScale = new Vector3(direction == Direction.Up ? -1f : 1f, 1f, 1f);
+		}
 	}
 
 	protected override void Animate()
 	{
 		base.Animate();
 
-		if (moveDirection.IsZero())
+		if (controller.isGrounded && moveDirection.IsZero())
 			animator.Play(SwitchForDirection(idleDown, idleUp, idleSide));
 		else
-			animator.Play(SwitchForDirection(moveDown, moveUp, moveSide), Mathf.Max(0.3f, controller.velocity.OnlyXZ().magnitude / moveSpeed));
+			animator.Play(SwitchForDirection(moveDown, moveUp, moveSide), Mathf.Clamp(controller.velocity.magnitude / moveSpeed, 0.3f, 2.5f));
+	}
+
+	private void PerformMovement(InputState state)
+	{
+		moveDirection = new Vector3(state.horizontalInput / 127f, 0f, state.verticalInput / 127f).relativeTo(Quaternion.Euler(0f, state.camera * 90f, 0f));
+
+		if (state.jumpInput)
+			if (controller.isGrounded)
+				Jump();
+
+		Move();
 	}
 
 	private void PerformReconciliation(TransformState state)

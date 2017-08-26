@@ -362,6 +362,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 416b4252da623ff48a0417bf5cfaac96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swordItem: {fileID: 1369735864286290, guid: 6862c0c3194778d4dbe832b81bd9d719, type: 2}
+  shieldItem: {fileID: 1070668010734288, guid: cd9c9d6ac9bec4f4da2c6f812ea9674b, type: 2}
 --- !u!4 &1289433562
 Transform:
   m_ObjectHideFlags: 0
@@ -487,6 +489,7 @@ MonoBehaviour:
   m_MatchPort: 443
   matchName: default
   matchSize: 4
+  clientLoadedScene: 0
   isNetworkActive: 0
   matchMaker: {fileID: 0}
 --- !u!4 &1982568785
