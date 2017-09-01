@@ -1,13 +1,13 @@
 fileFormatVersion: 2
 guid: 416b4252da623ff48a0417bf5cfaac96
-timeCreated: 1503772236
+timeCreated: 1503888034
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - swordItem: {fileID: 1369735864286290, guid: 6862c0c3194778d4dbe832b81bd9d719,
+  - swordItem: {fileID: 114318247118055144, guid: 6862c0c3194778d4dbe832b81bd9d719,
       type: 2}
-  - shieldItem: {fileID: 1070668010734288, guid: cd9c9d6ac9bec4f4da2c6f812ea9674b,
+  - shieldItem: {fileID: 114538724645531000, guid: cd9c9d6ac9bec4f4da2c6f812ea9674b,
       type: 2}
   executionOrder: 0
   icon: {instanceID: 0}

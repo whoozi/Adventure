@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4935067683574484}
   - component: {fileID: 212590487081695118}
+  - component: {fileID: 114318247118055144}
   m_Layer: 0
   m_Name: Sword Item
   m_TagString: Untagged
@@ -40,6 +41,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114318247118055144
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1369735864286290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe5b2e8111913a8478fccff9dfaa8306, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212590487081695118
 SpriteRenderer:
   m_ObjectHideFlags: 1

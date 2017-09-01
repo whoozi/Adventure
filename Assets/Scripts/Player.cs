@@ -11,8 +11,8 @@ public class Player : Mob
 	public struct InputState
 	{
 		public uint state;
-		public sbyte horizontalInput;
-		public sbyte verticalInput;
+		public float horizontalInput;
+		public float verticalInput;
 		public bool jumpInput;
 		public sbyte camera;
 	}
@@ -28,7 +28,7 @@ public class Player : Mob
 
 	public AnimationClip idleDown, idleUp, idleSide, moveDown, moveUp, moveSide;
 
-	private GameObject mainHandObject, offHandObject;
+	private Item mainHandItem, offHandItem;
 
 	private InputState currentInputState;
 	private List<InputState> queuedInputStates;
@@ -47,12 +47,12 @@ public class Player : Mob
 		playerCamera = GameManager.mainCamera.GetComponent<PlayerCamera>();
 		animatorNodes = GetComponentInChildren<SpriteAnimNodes>();
 
+		queuedInputStates = new List<InputState>();
 		playerCamera.target = this;
 
-		mainHandObject = Instantiate(GameManager.instance.swordItem, transform, false);
-		offHandObject = Instantiate(GameManager.instance.shieldItem, transform, false);
-
-		queuedInputStates = new List<InputState>();
+		// Spawn equipped items for testing purposes
+		mainHandItem = Instantiate(GameManager.instance.swordItem, transform, false);
+		offHandItem = Instantiate(GameManager.instance.shieldItem, transform, false);
 	}
 
 	protected override void FixedUpdate()
@@ -64,8 +64,8 @@ public class Player : Mob
 			currentInputState = new InputState()
 			{
 				state = currentState,
-				horizontalInput = (sbyte)(Input.GetAxisRaw("Horizontal") * 127f),
-				verticalInput = (sbyte)(Input.GetAxisRaw("Vertical") * 127f),
+				horizontalInput = Input.GetAxisRaw("Horizontal"),
+				verticalInput = Input.GetAxisRaw("Vertical"),
 				jumpInput = Input.GetButton("Jump"),
 				camera = playerCamera.side,
 			};
@@ -106,26 +106,26 @@ public class Player : Mob
 
 	private void LateUpdate()
 	{
-		if (mainHandObject)
+		if (mainHandItem)
 		{
-			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(0) * (1f / renderer.sprite.pixelsPerUnit);
+			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(0) * 0.1f;
 			localPosition.y = -localPosition.y;
 			localPosition.z += (direction == Direction.Left || direction == Direction.Up) ? 0.0001f : -0.0001f;
 
-			mainHandObject.transform.localPosition = localPosition;
-			mainHandObject.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(0));
-			mainHandObject.transform.localScale = new Vector3(direction == Direction.Down ? -1f : 1f, 1f, 1f);
+			mainHandItem.transform.localPosition = localPosition;
+			mainHandItem.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(0));
+			mainHandItem.transform.localScale = new Vector3(direction == Direction.Down ? -1f : 1f, 1f, 1f);
 		}
 
-		if (offHandObject)
+		if (offHandItem)
 		{
-			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(1) * (1f / renderer.sprite.pixelsPerUnit);
+			Vector3 localPosition = (Vector3)animatorNodes.GetPositionRaw(1) * 0.1f;
 			localPosition.y = -localPosition.y;
 			localPosition.z += (direction == Direction.Right || direction == Direction.Up) ? 0.0001f : -0.0001f;
 
-			offHandObject.transform.localPosition = localPosition;
-			offHandObject.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(1));
-			offHandObject.transform.localScale = new Vector3(direction == Direction.Up ? -1f : 1f, 1f, 1f);
+			offHandItem.transform.localPosition = localPosition;
+			offHandItem.transform.localRotation = Quaternion.Euler(0f, 0f, animatorNodes.GetAngleRaw(1));
+			offHandItem.transform.localScale = new Vector3(direction == Direction.Up ? -1f : 1f, 1f, 1f);
 		}
 	}
 
@@ -141,7 +141,7 @@ public class Player : Mob
 
 	private void PerformMovement(InputState state)
 	{
-		moveDirection = new Vector3(state.horizontalInput / 127f, 0f, state.verticalInput / 127f).relativeTo(Quaternion.Euler(0f, state.camera * 90f, 0f));
+		moveDirection = new Vector3(state.horizontalInput, 0f, state.verticalInput).relativeTo(Quaternion.Euler(0f, state.camera * 90f, 0f));
 
 		if (state.jumpInput)
 			if (controller.isGrounded)
@@ -169,20 +169,12 @@ public class Player : Mob
 
 			transform.position = state.position;
 
+			// Replay all queued input based on recieved server position
 			for (int i = 0; i < queuedInputStates.Count; i++)
 				PerformMovement(queuedInputStates[i]);
 
-			if (Vector3.Distance(transform.position.OnlyXZ(), state.position.OnlyXZ()) > 0.6f)
-				transform.position = state.position;
-			else
-			{
-				transform.position = oldPosition;
-				velocity = oldVelocity;
-			}
-
-			if (Vector3.Distance(transform.position.OnlyY(), state.position.OnlyY()) > 0.6f)
-				transform.position = state.position;
-			else
+			// Check if distance between the old position and the new, predicted position is valid, if so, restore old position and velocity
+			if (Vector3.Distance(oldPosition, transform.position) < 0.6f)
 			{
 				transform.position = oldPosition;
 				velocity = oldVelocity;
@@ -212,7 +204,7 @@ public class Player : Mob
 
 		serverState = state;
 
-		if (!isLocalPlayer)
+		if (isLocalPlayer)
 			PerformReconciliation(state);
 	}
 

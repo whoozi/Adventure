@@ -9,7 +9,6 @@ public class Mob : NetworkBehaviour
 {
 	protected CharacterController controller { get; private set; }
 	public SpriteAnim animator { get; private set; }
-	new protected SpriteRenderer renderer { get; private set; }
 
 	public float moveSpeed = 3.5f;
 	public float moveSmoothTime = 0.025f;
@@ -33,7 +32,6 @@ public class Mob : NetworkBehaviour
 	{
 		controller = GetComponent<CharacterController>();
 		animator = GetComponentInChildren<SpriteAnim>();
-		renderer = GetComponentInChildren<SpriteRenderer>();
 	}
 
 	protected virtual void FixedUpdate()
