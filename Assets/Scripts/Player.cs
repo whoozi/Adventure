@@ -26,7 +26,7 @@ public class Player : Mob
 	public PlayerCamera playerCamera { get; private set; }
 	public SpriteAnimNodes animatorNodes { get; private set; }
 
-	public AnimationClip idleDown, idleUp, idleSide, moveDown, moveUp, moveSide;
+	public AnimationClip idleDown, idleUp, idleSide, moveDown, moveUp, moveSide, swingDown, swingUp, swingLeft, swingRight;
 
 	private Item mainHandItem, offHandItem;
 
@@ -100,8 +100,9 @@ public class Player : Mob
 		if (Input.GetKeyDown(KeyCode.E))
 			playerCamera.side++;
 
-		if (Input.GetKeyDown(KeyCode.X))
-			transform.position = new Vector3(Random.Range(-3f, 3f), 3f, Random.Range(-3f, 3f));
+		if (Input.GetKeyDown(KeyCode.Mouse0))
+			if (!ignoreMovement)
+				animator.Play(SwitchForDirection(swingDown, swingUp, swingLeft, swingRight));
 	}
 
 	private void LateUpdate()
@@ -132,6 +133,9 @@ public class Player : Mob
 	protected override void Animate()
 	{
 		base.Animate();
+
+		if (ignoreMovement)
+			return;
 
 		if (controller.isGrounded && moveDirection.IsZero())
 			animator.Play(SwitchForDirection(idleDown, idleUp, idleSide));
@@ -214,5 +218,15 @@ public class Player : Mob
 			PerformReconciliation(state);
 		else
 			transform.position = state.position;
+	}
+
+	private void AnimDisableMovement()
+	{
+		ignoreMovement = true;
+	}
+
+	private void AnimEnableMovement()
+	{
+		ignoreMovement = false;
 	}
 }

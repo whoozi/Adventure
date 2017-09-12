@@ -14,6 +14,7 @@ public class Mob : NetworkBehaviour
 	public float moveSmoothTime = 0.025f;
 	public float airSmoothTime = 0.25f;
 	public float jumpHeight = 1.3f;
+	public bool ignoreMovement { get; set; }
 
 	private Vector3 _moveDirection;
 	private float moveAngle = -180f;
@@ -51,6 +52,9 @@ public class Mob : NetworkBehaviour
 
 	protected virtual void Animate()
 	{
+		if (ignoreMovement)
+			return;
+
 		direction = CalculateDirection();
 		transform.localScale = new Vector3(direction == Direction.Left ? -1f : 1f, 1f, 1f);
 	}
@@ -58,7 +62,7 @@ public class Mob : NetworkBehaviour
 	protected void Move()
 	{
 		velocity += Physics.gravity * Time.fixedDeltaTime;
-		velocity = Vector3.SmoothDamp(velocity.OnlyXZ(), moveDirection.OnlyXZ() * moveSpeed, ref smoothVelocity, controller.isGrounded ? moveSmoothTime : airSmoothTime, Mathf.Infinity, Time.fixedDeltaTime) + Vector3.up * velocity.y;
+		velocity = Vector3.SmoothDamp(velocity.OnlyXZ(), !ignoreMovement ? moveDirection.OnlyXZ() * moveSpeed : Vector3.zero, ref smoothVelocity, controller.isGrounded ? moveSmoothTime : airSmoothTime, Mathf.Infinity, Time.fixedDeltaTime) + Vector3.up * velocity.y;
 
 		CollisionFlags flags = controller.Move(velocity * Time.fixedDeltaTime);
 
@@ -110,6 +114,27 @@ public class Mob : NetworkBehaviour
 			case Direction.Left:
 			case Direction.Right:
 				return side;
+
+			default:
+				throw new Exception("Invalid Direction: " + direction);
+		}
+	}
+
+	public T SwitchForDirection<T>(T down, T up, T left, T right)
+	{
+		switch (direction)
+		{
+			case Direction.Down:
+				return down;
+
+			case Direction.Up:
+				return up;
+
+			case Direction.Left:
+				return left;
+
+			case Direction.Right:
+				return right;
 
 			default:
 				throw new Exception("Invalid Direction: " + direction);

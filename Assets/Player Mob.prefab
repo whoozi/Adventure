@@ -188,6 +188,10 @@ MonoBehaviour:
   moveDown: {fileID: 7400000, guid: 41881988489f43744bbedb5d0a77aa2a, type: 2}
   moveUp: {fileID: 7400000, guid: e2cc4590382c6c84c9ab036aa5fb457f, type: 2}
   moveSide: {fileID: 7400000, guid: 4b1d820dd3724a042a3a7981c37ccf10, type: 2}
+  swingDown: {fileID: 7400000, guid: dca83eec880887c4a984ae5bf5d9e422, type: 2}
+  swingUp: {fileID: 7400000, guid: 450207f4f7099f0498bcc85190816227, type: 2}
+  swingLeft: {fileID: 7400000, guid: ef4227ba9c71f7b4884d3e413b210dc7, type: 2}
+  swingRight: {fileID: 7400000, guid: 5164416b7bfe26d46a23629ebea3304b, type: 2}
 --- !u!143 &143654257850271118
 CharacterController:
   m_ObjectHideFlags: 1

@@ -81,7 +81,7 @@ namespace PowerTools
 		#region Funcs: Public 
 
 		/// Plays the specified clip
-		public void Play(AnimationClip anim, float speed = 1, bool force = false)
+		public void Play(AnimationClip anim, float speed = 1, float time = 0, bool force = false)
 		{
 			if (anim == null)
 				return;
@@ -107,7 +107,7 @@ namespace PowerTools
 			m_controller.clips = m_clipPairArray;
 #endif
 			m_animator.Update(0.0f); // Update so that new clip state is reset before hitting play
-			m_animator.Play(STATE_NAME, 0, 0);
+			m_animator.Play(STATE_NAME, 0, time);
 			// m_speed = Mathf.Max(0,speed);
 			// m_animator.speed = m_speed;
 			m_currAnim = anim;
