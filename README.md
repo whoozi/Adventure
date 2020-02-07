@@ -1,6 +1,6 @@
 # Adventure #
 
-Adventure (a working title, obviously) is an action-adventure game being made in Unity. It is inspired by the likes of Terraria, Minecraft, and The Legend of Zelda.
+Adventure is an action-adventure game made in Unity. It was inspired by the likes of Terraria, Minecraft, and The Legend of Zelda.
 
 ### How does it play? ###
 
